@@ -56,7 +56,7 @@ func (r *Redis) newPool() *redis.Pool {
 		MaxIdle:   r.conf.maxIdle,
 		MaxActive: r.conf.maxActive, // max number of connections
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", ":"+r.conf.port)
+			c, err := redis.Dial("tcp", "127.0.0.1:"+r.conf.port)
 			if err != nil {
 				return c, err
 			}
