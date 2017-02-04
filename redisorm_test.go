@@ -12,6 +12,7 @@ func TestConfigure(t *testing.T){
 			"poolMaxIdle": 10,
 			"poolMaxActive": 20,
 			"port": "6379",
+			"ip": "127.0.0.1",
 		},
 	)
 	if err != nil{
@@ -25,6 +26,9 @@ func TestConfigure(t *testing.T){
 	}
 	if std.conf.port != "6379" {
 		t.Error("Expected port = \"6379\", got ", std.conf.port )
+	}
+	if std.conf.ip != "127.0.0.1" {
+		t.Error("Expected ip = \"127.0.0.1\", got ", std.conf.ip)
 	}
 }
 
