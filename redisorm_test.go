@@ -39,7 +39,7 @@ func TestSetGet(t *testing.T){
 	if err != nil {
 		t.Error("Expected set status nil, got ", err)
 	}
-	var obj string 
+	var obj string
 	err = Get("test", &obj)
 	if err != nil {
 		t.Error("Expected set status nil, got ", err)
@@ -47,7 +47,7 @@ func TestSetGet(t *testing.T){
 	if obj != "sss" {
 		t.Error("Expected obj = \"sss\", got ", obj)
 	}
-	
+
 }
 
 func TestPool(t *testing.T){
