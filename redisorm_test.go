@@ -30,6 +30,24 @@ func TestConfigure(t *testing.T){
 	if std.conf.ip != "127.0.0.1" {
 		t.Error("Expected ip = \"127.0.0.1\", got ", std.conf.ip)
 	}
+	if std.conf.db != 0 {
+		t.Error("Expected db = 0, got ", std.conf.db)
+	}
+	err = Configure(
+		map[string]interface{}{
+			"poolMaxIdle": 10,
+			"poolMaxActive": 20,
+			"port": "6379",
+			"ip": "127.0.0.1",
+			"db": 1,
+		},
+	)
+	if err != nil{
+		t.Error("Expected err nil, got err ", err)
+	}
+	if std.conf.db != 1 {
+		t.Error("Expected db = 1, got ", std.conf.db)
+	}
 }
 
 
@@ -42,7 +60,7 @@ func TestSetGet(t *testing.T){
 	var obj string
 	err = Get("test", &obj)
 	if err != nil {
-		t.Error("Expected set status nil, got ", err)
+		t.Error("Expected get status nil, got ", err)
 	}
 	if obj != "sss" {
 		t.Error("Expected obj = \"sss\", got ", obj)
@@ -61,5 +79,44 @@ func TestPool(t *testing.T){
 		if c != 1 {
 			t.Error("Expected single active connection, got ", c)
 		}
+	}
+}
+
+func TestDbNumber(t *testing.T){
+	db1 := 1
+	db2 := 2
+	objt := "sss"
+	var obj string
+
+	Configure(
+		map[string]interface{}{
+			"poolMaxIdle": 10,
+			"poolMaxActive": 20,
+			"port": "6379",
+			"ip": "127.0.0.1",
+			"db": db1,
+		},
+	)
+	Set("test", objt)
+	err := Get("test", &obj)
+	if err != nil {
+		t.Error("Expected get status nil, got ", err)
+	}
+	if obj != "sss" {
+		t.Error("Expected obj = \"sss\", got ", obj)
+	}
+
+	Configure(
+		map[string]interface{}{
+			"poolMaxIdle": 10,
+			"poolMaxActive": 20,
+			"port": "6379",
+			"ip": "127.0.0.1",
+			"db": db2,
+		},
+	)
+	err = Get("test", &obj)
+	if err == nil {
+		t.Error("Expected get status not nil, got ", err)
 	}
 }

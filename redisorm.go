@@ -11,6 +11,7 @@ type RedisConf struct {
 	maxActive int
 	port      string
 	ip        string
+	db        int
 }
 type Redis struct {
 	initialized bool
@@ -24,6 +25,7 @@ var std = &Redis{
 		maxActive: 0,
 		port:      "6379",
 		ip:        "127.0.0.1",
+		db:        0,
 	},
 }
 
@@ -43,6 +45,9 @@ func (r *Redis) Configure(cnf map[string]interface{}) error {
 	if r.conf.ip, ok = cnf["ip"].(string); !ok {
 		return errors.New("redis ip not specified")
 	}
+	if r.conf.db, ok = cnf["db"].(int); !ok {
+		r.conf.db = 0
+	}
 	r.initialized = true
 	pool = r.newPool()
 	return nil
@@ -60,7 +65,8 @@ func (r *Redis) newPool() *redis.Pool {
 		MaxIdle:   r.conf.maxIdle,
 		MaxActive: r.conf.maxActive, // max number of connections
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.Dial("tcp", r.conf.ip + ":" + r.conf.port)
+			cOptions := redis.DialDatabase(r.conf.db)
+			c, err := redis.Dial("tcp", r.conf.ip + ":" + r.conf.port, cOptions)
 			if err != nil {
 				return c, err
 			}
