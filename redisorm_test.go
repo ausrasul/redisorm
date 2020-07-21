@@ -120,3 +120,28 @@ func TestDbNumber(t *testing.T){
 		t.Error("Expected get status not nil, got ", err)
 	}
 }
+
+func TestGetNotExist(t *testing.T){
+	var obj string
+	err := Get("test1", &obj)
+	if err == nil {
+		t.Error("Expected get status not nil, got ", err)
+	}
+	if obj != "" {
+		t.Error("Expected obj = \"\", got ", obj)
+	}
+}
+
+func TestGetWrongType(t *testing.T){
+	obj := struct {
+		Name string
+		Age int
+	}{} // does not exist in db.
+	err := Get("test1", &obj)
+	if err == nil {
+		t.Error("Expected get status not nil, got ", err)
+	}
+	if obj.Name != "" {
+		t.Error("Expected obj.Name = \"\", got ", obj)
+	}
+}
