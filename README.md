@@ -30,15 +30,16 @@ user := &User{
 }
 func main(){
 	// Configure the package
-	
+
 	redisorm.Configure(
 		map[string]interface{}{
 			"poolMaxIdle":   10,
 			"poolMaxActive": 60,
 			"port":          "6379",
+			"db":             1, // optional, default 0
 		},
 	)
-	
+
 	err := redisorm.Set(user.Name, user)  // user.Name is just a key
 	err := redisorm.Get(user.Name, user)
 	//handle errors.
