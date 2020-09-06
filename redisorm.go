@@ -75,18 +75,17 @@ func (r *Redis) newPool() *redis.Pool {
 	}
 }
 
-func Get(key string, obj interface{}) error {
+func Get(key string, obj interface{}) (bool, error) {
 	c := pool.Get()
 	defer c.Close()
 	jsonString, err := redis.String(c.Do("GET", key))
+	if err == redis.ErrNil {return false, nil} // no result
 	if err != nil {
-		return err
+		return false, err
 	}
 	err = json.Unmarshal([]byte(jsonString), obj)
-	if err != nil {
-		return err
-	}
-	return nil
+	if err != nil {return true, err} // bad object type
+	return true, nil
 }
 
 func Set(key string, obj interface{}) error {
@@ -103,4 +102,26 @@ func Set(key string, obj interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func Del(key interface{}) (int, error) {
+	switch k := key.(type) {
+	case string:
+		return del([]interface{}{k})
+	case []string:
+		intf := make([]interface{}, len(k))
+		for i, v := range k {
+			intf[i] = v
+		}
+		return del(intf)
+	default:
+		return 0, errors.New("Invalid key(s)")
+	}
+}
+
+func del(keys []interface{}) (int, error) {
+	c := pool.Get()
+	defer c.Close()
+	i, err := redis.Int(c.Do("DEL", keys...))
+	return i, err
 }
