@@ -58,12 +58,9 @@ func TestSetGet(t *testing.T){
 		t.Error("Expected set status nil, got ", err)
 	}
 	var obj string
-	ok, err := Get("test1___", &obj)
+	err = Get("test1___", &obj)
 	if err != nil {
 		t.Error("Expected get status nil, got ", err)
-	}
-	if !ok {
-		t.Error("Expected get ok true, got ", ok)
 	}
 	if obj != "sss" {
 		t.Error("Expected obj = \"sss\", got ", obj)
@@ -101,9 +98,9 @@ func TestDbNumber(t *testing.T){
 		},
 	)
 	Set("test3___", objt)
-	ok, err := Get("test3___", &obj)
-	if err != nil || !ok{
-		t.Error("Expected get status nil and ok true, got ", err, ok)
+	err := Get("test3___", &obj)
+	if err != nil {
+		t.Error("Expected get status nil, got ", err)
 	}
 	if obj != "sss" {
 		t.Error("Expected obj = \"sss\", got ", obj)
@@ -118,9 +115,9 @@ func TestDbNumber(t *testing.T){
 			"db": db2,
 		},
 	)
-	ok, err = Get("test3___", &obj)
-	if err != nil || ok {
-		t.Error("Expected get status nil and ok false, got ", err, ok)
+	err = Get("test3___", &obj)
+	if err == nil {
+		t.Error("Expected get status not nil, got ", err)
 	}
 	Configure(
 		map[string]interface{}{
@@ -134,13 +131,17 @@ func TestDbNumber(t *testing.T){
 }
 
 func TestGetNotExist(t *testing.T){
-	var obj string
-	ok, err := Get("test4___", &obj)
-	if err != nil || ok {
-		t.Error("Expected get status nil, and ok false got ", err, ok)
+	obj := struct{
+		Name string
+	}{
+		Name: "",
 	}
-	if obj != "" {
-		t.Error("Expected obj = \"\", got ", obj)
+	err := Get("test4___", &obj)
+	if err == nil {
+		t.Error("Expected get status not nil, got ", err)
+	}
+	if obj.Name != "" {
+		t.Error("Expected obj.Name = \"\", got ", obj)
 	}
 }
 
@@ -150,9 +151,9 @@ func TestGetWrongType(t *testing.T){
 		Age int
 	}{} // does not exist in db.
 	Set("test5___", "sss")
-	ok, err := Get("test5___", &obj)
-	if err == nil || !ok {
-		t.Error("Expected get status not nil and ok true, got ", err, ok)
+	err := Get("test5___", &obj)
+	if err == nil {
+		t.Error("Expected get status not nil, got ", err)
 	}
 	if obj.Name != "" {
 		t.Error("Expected obj.Name = \"\", got ", obj)
@@ -170,9 +171,9 @@ func TestDel(t *testing.T){
 		t.Error("Expected del to return 1, got ", i)
 	}
 	var obj string
-	ok, err := Get("test6___", &obj)
-	if err != nil || ok {
-		t.Error("Expected get status nil and ok false, got ", err)
+	err = Get("test6___", &obj)
+	if err == nil{
+		t.Error("Expected get status nil, got ", err)
 	}
 	if obj != "" {
 		t.Error("Expected obj = \"\", got ", obj)
@@ -200,12 +201,12 @@ func TestDelMulti(t *testing.T){
 		t.Error("Expected del to return 2, got ", i)
 	}
 	var obj string
-	ok, _ := Get("test8___", &obj)
-	if obj != "" || ok{
-		t.Error("Expected obj = \"\" and ok false, got ", obj, ok)
+	err = Get("test8___", &obj)
+	if obj != "" || err == nil{
+		t.Error("Expected obj = \"\" and err not nil, got ", obj, err)
 	}
-	ok, _ = Get("test9___", &obj)
-	if obj != "" {
-		t.Error("Expected obj = \"\" and ok false, got ", obj, ok)
+	err = Get("test9___", &obj)
+	if obj != "" || err == nil{
+		t.Error("Expected obj = \"\" and err not nil, got ", obj, err)
 	}
 }

@@ -75,17 +75,13 @@ func (r *Redis) newPool() *redis.Pool {
 	}
 }
 
-func Get(key string, obj interface{}) (bool, error) {
+func Get(key string, obj interface{}) error {
 	c := pool.Get()
 	defer c.Close()
 	jsonString, err := redis.String(c.Do("GET", key))
-	if err == redis.ErrNil {return false, nil} // no result
-	if err != nil {
-		return false, err
-	}
+	if err != nil { return err }
 	err = json.Unmarshal([]byte(jsonString), obj)
-	if err != nil {return true, err} // bad object type
-	return true, nil
+	return err
 }
 
 func Set(key string, obj interface{}) error {
