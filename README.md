@@ -39,7 +39,8 @@ func main(){
 	}
 	err := redisorm.Set(user.Name, user)  // user.Name is the key
 	err := redisorm.Get(user.Name, &user)
-	// err != nil means no data, db error, unmarshaling error.
+	// err != nil means unmarshaling error, db error
+	// err.Error() == "no_data" means no data.
 	cnt, err := redisorm.Del(user.Name)
 	// cnt number of items deleted, err != nil if db errors.
 	cnt, err = redisorm.Del(["key1", "key2", "key3"])

@@ -116,8 +116,8 @@ func TestDbNumber(t *testing.T){
 		},
 	)
 	err = Get("test3___", &obj)
-	if err == nil {
-		t.Error("Expected get status not nil, got ", err)
+	if err.Error() != "no_data" {
+		t.Error("Expected get status no_data, got ", err)
 	}
 	Configure(
 		map[string]interface{}{
@@ -137,8 +137,8 @@ func TestGetNotExist(t *testing.T){
 		Name: "",
 	}
 	err := Get("test4___", &obj)
-	if err == nil {
-		t.Error("Expected get status not nil, got ", err)
+	if err.Error() != "no_data" {
+		t.Error("Expected get status no_data, got ", err)
 	}
 	if obj.Name != "" {
 		t.Error("Expected obj.Name = \"\", got ", obj)
@@ -152,8 +152,8 @@ func TestGetWrongType(t *testing.T){
 	}{} // does not exist in db.
 	Set("test5___", "sss")
 	err := Get("test5___", &obj)
-	if err == nil {
-		t.Error("Expected get status not nil, got ", err)
+	if err == nil || err.Error() == "no_data" {
+		t.Error("Expected get status not nil nor no_data, got ", err)
 	}
 	if obj.Name != "" {
 		t.Error("Expected obj.Name = \"\", got ", obj)
@@ -172,8 +172,8 @@ func TestDel(t *testing.T){
 	}
 	var obj string
 	err = Get("test6___", &obj)
-	if err == nil{
-		t.Error("Expected get status nil, got ", err)
+	if err.Error() != "no_data"{
+		t.Error("Expected get status no_data, got ", err)
 	}
 	if obj != "" {
 		t.Error("Expected obj = \"\", got ", obj)
@@ -202,11 +202,11 @@ func TestDelMulti(t *testing.T){
 	}
 	var obj string
 	err = Get("test8___", &obj)
-	if obj != "" || err == nil{
-		t.Error("Expected obj = \"\" and err not nil, got ", obj, err)
+	if obj != "" || err.Error() != "no_data"{
+		t.Error("Expected obj = \"\" and err no_data, got ", obj, err)
 	}
 	err = Get("test9___", &obj)
-	if obj != "" || err == nil{
-		t.Error("Expected obj = \"\" and err not nil, got ", obj, err)
+	if obj != "" || err.Error() != "no_data"{
+		t.Error("Expected obj = \"\" and err no_data, got ", obj, err)
 	}
 }

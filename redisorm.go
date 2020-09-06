@@ -79,6 +79,9 @@ func Get(key string, obj interface{}) error {
 	c := pool.Get()
 	defer c.Close()
 	jsonString, err := redis.String(c.Do("GET", key))
+	if err == redis.ErrNil {
+		return errors.New("no_data")
+	}
 	if err != nil { return err }
 	err = json.Unmarshal([]byte(jsonString), obj)
 	return err
